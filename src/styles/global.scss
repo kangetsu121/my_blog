@@ -1,0 +1,19 @@
+body {
+  font-family: -apple-system, 'Hiragino Kaku Gothic ProN', BlinkMacSystemFont, 'Hiragino Sans', Meiryo, sans-serif;
+  color: rgb(46 43 43);
+  background-color: #efefef;
+}
+
+.footnotes {
+  font-size: small;
+}
+
+// gatsby-remark-prismjs-title
+.gatsby-code-title {
+  display: table;
+  padding: 8px 1rem 20px;
+  margin: 20px 0 -24px;
+  line-height: 1;
+  color: #ccc;
+  background: #2d2d2d;
+}

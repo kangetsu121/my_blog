@@ -1,0 +1,64 @@
+.article-card {
+  margin: 50px 0;
+}
+
+.link-text {
+  color: black;
+  text-decoration: none;
+}
+
+.thumbnail-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.thumbnail-image {
+  max-width: 783px;
+  max-height: 410px;
+  margin: 5px 0;
+}
+
+.separator {
+  height: 4px;
+  background: linear-gradient(to right, gray, whitesmoke);
+  border: none;
+}
+
+.date-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.date {
+  margin: 5px 0;
+  font-size: small;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 14px;
+  font-weight: 700;
+  color: royalblue;
+  text-decoration: none;
+}
+
+.tag-link {
+  margin-right: 1rem;
+  font-size: small;
+  color: royalblue;
+  text-decoration: none;
+
+  svg {
+    color: black;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .date-wrapper {
+    flex-direction: column;
+  }
+
+  .date {
+    margin: 1px 0;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recess-order",
+    "stylelint-config-recommended-scss"
+  ],
+  "plugins": ["stylelint-order"],
+  "ignoreFiles": ["**/node_modules/**", "src/styles/ress.css"],
+  "rules": {
+    "string-quotes": "single"
+  }
+}

@@ -1,0 +1,19 @@
+.header-container {
+  box-shadow: 0 2px 2px 0 darkgrey;
+}
+
+.body-contents {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  padding: 0 5%;
+  margin: 0 auto;
+  font-size: 15px;
+}
+
+@media screen and (max-width: 756px) {
+  .body-contents {
+    display: flex;
+    flex-direction: column;
+  }
+}

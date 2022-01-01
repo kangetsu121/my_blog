@@ -1,2 +1,1 @@
-# my_blog
-My Blog
+# My Blog Generated with GatsbyJS

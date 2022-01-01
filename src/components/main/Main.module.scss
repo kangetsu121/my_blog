@@ -1,0 +1,10 @@
+.main-articles {
+  width: 68%;
+}
+
+@media screen and (max-width: 756px) {
+  .main-articles {
+    width: 95%;
+    margin: 0 auto;
+  }
+}

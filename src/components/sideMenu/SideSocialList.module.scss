@@ -1,0 +1,16 @@
+.side-section {
+  padding-bottom: 2rem;
+}
+
+.nav-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.nav-item {
+  padding-bottom: 1rem;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}

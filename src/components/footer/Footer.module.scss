@@ -1,0 +1,17 @@
+.footer {
+  padding: 40px 0;
+  font-size: 0.8rem;
+  box-shadow: 0 -2px 2px 0 darkgrey;
+}
+
+.nav-list {
+  display: flex;
+  justify-content: space-evenly;
+  padding-left: 0;
+  list-style: none;
+}
+
+.link {
+  color: black;
+  text-decoration: none;
+}
