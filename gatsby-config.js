@@ -1,14 +1,17 @@
 module.exports = {
   siteMetadata: {
-    siteUrl: 'https://www.kangetsu121.work/',
     title: 'Kangetsu Blog',
+    titleTemplate: '%s',
     description: '学習メモや読書記録など',
+    url: 'https://kangetsu121.work',
+    image: './src/images/logo.png',
+    twitterUsername: '@kangetsu_121'
   },
   plugins: [
     {
       resolve: 'gatsby-plugin-google-gtag',
       options: {
-        trackingIds: ['G-J7YFVB2EQL'],
+        trackingIds: ['G-BPWZB6KWCL'],
         gtagConfig: {
           anonymize_ip: true,
           cookie_expires: 0,

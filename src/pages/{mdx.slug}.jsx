@@ -12,7 +12,12 @@ import { bodyContainer, articleContent } from '../styles/article.module.scss';
 const BlogPost = ({ data }) => {
   return (
     <Layout>
-      <Seo title={data.mdx.frontmatter.title} description={data.mdx.excerpt} />
+      <Seo
+        title={data.mdx.frontmatter.title}
+        description={data.mdx.excerpt}
+        image={data.mdx.thumbnail}
+        article={true}
+      />
       <Main>
         <ArticleSummary articleInfo={data.mdx} />
         <div className={`${bodyContainer} ${articleContent}`}>
