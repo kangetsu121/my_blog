@@ -13,7 +13,7 @@ const Seo = ({ title, description, image, article }) => {
             defaultTitle: title
             titleTemplate
             defaultDescription: description
-            siteUrl: url
+            siteUrl
             defaultImage: image
             twitterUsername
           }
@@ -59,7 +59,7 @@ const Seo = ({ title, description, image, article }) => {
       )}
       {seo.image && <meta name="twitter:image" content={seo.image} />}
     </Helmet>
-  )
+  );
 };
 
 Seo.defaultProps = {

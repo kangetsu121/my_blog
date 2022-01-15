@@ -3,9 +3,9 @@ module.exports = {
     title: 'Kangetsu Blog',
     titleTemplate: '%s',
     description: '学習メモや読書記録など',
-    url: 'https://kangetsu121.work',
+    siteUrl: 'https://kangetsu121.work',
     image: './src/images/logo.png',
-    twitterUsername: '@kangetsu_121'
+    twitterUsername: '@kangetsu_121',
   },
   plugins: [
     {
