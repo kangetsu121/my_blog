@@ -66,9 +66,6 @@ const Seo = ({ title, description, image, article }) => {
 
 Seo.defaultProps = {
   lang: 'ja',
-  title: null,
-  description: null,
-  image: null,
   article: false,
 };
 
