@@ -15,7 +15,7 @@ const BlogPost = ({ data }) => {
       <Seo
         title={data.mdx.frontmatter.title}
         description={data.mdx.excerpt}
-        image={data.mdx.thumbnail}
+        image={data.mdx.frontmatter.thumbnail.childImageSharp.gatsbyImageData.images.fallback.src}
         article={true}
       />
       <Main>

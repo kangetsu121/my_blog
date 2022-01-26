@@ -1,3 +1,5 @@
+/* eslint import/no-unresolved: [2, { ignore: ['@reach/router'] }] */
+
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation } from '@reach/router';
