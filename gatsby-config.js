@@ -4,7 +4,7 @@ module.exports = {
     titleTemplate: '%s',
     description: '学習メモや読書記録など',
     siteUrl: 'https://kangetsu121.work',
-    image: '/logo.png',
+    image: '/ogp-logo.png',
     twitterUsername: '@kangetsu_121',
   },
   plugins: [
