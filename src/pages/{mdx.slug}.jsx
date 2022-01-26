@@ -15,7 +15,7 @@ const BlogPost = ({ data }) => {
       <Seo
         title={data.mdx.frontmatter.title}
         description={data.mdx.excerpt}
-        image={data.mdx.thumbnail}
+        image={data.mdx.frontmatter.thumbnail.childImageSharp.fluid.src}
         article={true}
       />
       <Main>
@@ -42,6 +42,9 @@ export const query = graphql`
         thumbnail {
           childImageSharp {
             gatsbyImageData
+            fluid {
+              src
+            }
           }
         }
         thumbnail_alt
