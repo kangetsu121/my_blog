@@ -42,6 +42,9 @@ export const query = graphql`
         thumbnail {
           childImageSharp {
             gatsbyImageData
+            fluid {
+              src
+            }
           }
         }
         thumbnail_alt
