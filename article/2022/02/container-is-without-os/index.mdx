@@ -1,0 +1,324 @@
+---
+title: "「コンテナには OS はない」ということについて"
+posted_at: "2022-02-11"
+updated_at: "2022-02-11"
+tags: ['Docker']
+thumbnail: './vertical-logo-monochromatic.png'
+thumbnail_alt: 'Docker logo'
+---
+
+## TL;DR
+
+- コンテナには OS はない
+  - Ubuntu や CentOS のコンテナは存在するが, カーネルを含まないディストリビューションのようなものであり OS ではない
+- コンテナは Linux カーネルの機能で実現しているので, ホスト OS に Linux カーネルが必須
+  - Windows や Mac でも Docker が使えるのは Docker Desktop が Linux VM のようなものを作ってその上で動かしているため
+
+## コンテナと OS の関係
+
+コンテナ技術の話になるとよく「コンテナに OS はない」という話を目にします。これまできちんと理解できていませんでしたが, 調べて納得したので記録しておきます。
+
+### Ubuntu や CeontOS などのコンテナイメージは何者か
+
+Dokcer 公式のレジストリである [Docker Hub](https://hub.docker.com/) には, [Ubuntu](https://hub.docker.com/_/ubuntu) や [CentOS](https://hub.docker.com/_/centos) のイメージが存在します。
+これを見て, 「コンテナにも OS があるのでは」と思ってしまいがち[^1] ですが, これは __「ディストリビューション」「カーネル」「OS」に関する誤解__ に基づきます。
+
+まず, 重要な点として, Ubuntu や CentOS はディストリビューションです。ディストリビューションは大抵, __Linux カーネル + 基本ソフトウェア群__ を指します。
+シェルや, 普段よく使うコマンド群 (例えば `echo` や `grep`) も「基本ソフトウェア群」の範疇です。
+ただしややこしいのですが, ディストリビューションは __「広義の OS」__ と呼ばれることもあります。
+
+一方カーネルは, ディストリビューションに比べ, よりコアの部分を指し, 例えばハードウェアとソフトウェアの仲介を行います。
+__「狭義の OS」__ と呼ばれることもあります。
+上述の通りシェルもカーネルに含まれないので, カーネルだけでは通常は何もできません[^2]。
+ちなみに Linux カーネルは [GitHub 上](https://github.com/torvalds/linux) で開発されています[^3]。
+
+ここからが本題ですが, では Docker Hub にある Ubuntu や CentOS のコンテナは何なのでしょうか。
+
+[^1]: 私はそう思ってました
+[^2]: 頑張ればもちろんいろいろできるけどユーザーが直接使うようなものではない
+[^3]: 本来 Linux はこの Linux カーネルのみを指す, と言われる
+
+#### コンテナの仕組み
+
+そもそもですが, コンテナは __Linux kernel の__ `namespaces`, `cgroups` などの機能によって実現されています[^4]。
+
+- [`namespaces`](https://man7.org/linux/man-pages/man7/namespaces.7.html): プロセス, ネットワーク, ユーザーなどのグローバルなリソースを独立させる[^5]
+- [`cgroups`](https://man7.org/linux/man-pages/man7/cgroups.7.html): CPU, メモリなどのリソース割り当てをプロセスごとに制限する
+
+このため, 前提として, 通常は __Linux kernel 上でないと Docker をはじめとするコンテナは作れません__。
+
+そしてコンテナは, これらの機能によって, __ホスト OS の一部を論理的に切り離している__ に過ぎないと言えます。
+このように, あくまでコンテナは「ホスト OS の一部」なので, Linux 以外のコンテナは存在しません。
+Docker Hub などのコンテナレジストリを見ても Windows や macOS のコンテナが存在しないのはこのためです。
+
+[^4]: 一緒に語られることもありますが, 呼び出したプロセスにとってのルートディレクトリ (`/`) を変更する [`chroot`](https://man7.org/linux/man-pages/man2/chroot.2.html) はコンテナ技術とは別物です
+[^5]: プログラミングにおける「名前空間」をイメージするとわかりやすい
+
+#### 実際のコンテナの様子を確認する
+
+では実際に操作して確認してみます。
+Docker を動かすホスト OS は Ubuntu 20.04, コンテナは Docker Hub にある CentOS イメージを使います。
+
+- ホスト OS
+
+  ```shell-session
+  kangetsu@ubuntu20:~$ uname -a
+  Linux ubuntu20 5.4.0-97-generic #110-Ubuntu SMP Thu Jan 13 18:28:08 UTC 2022 aarch64 aarch64 aarch64 GNU/Linux
+  kangetsu@ubuntu20:~$
+  ```
+
+- コンテナ
+
+  ```shell-session
+  kangetsu@ubuntu20:~$ docker image inspect centos | jq -r '.[].RepoTags[]'
+  centos:latest
+  kangetsu@ubuntu20:~$
+  ```
+
+まずコンテナのディストリビューションを確認します。
+
+```shell-session
+[root@fdda8cec6fe2 /]# cat /etc/os-release
+NAME="CentOS Linux"
+VERSION="8"
+ID="centos"
+ID_LIKE="rhel fedora"
+VERSION_ID="8"
+PLATFORM_ID="platform:el8"
+PRETTY_NAME="CentOS Linux 8"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:centos:centos:8"
+HOME_URL="https://centos.org/"
+BUG_REPORT_URL="https://bugs.centos.org/"
+CENTOS_MANTISBT_PROJECT="CentOS-8"
+CENTOS_MANTISBT_PROJECT_VERSION="8"
+[root@fdda8cec6fe2 /]#
+```
+
+ホスト OS は Ubuntu であるにもかかわらず, 確かにコンテナのディストリビューションは CentOS になっていました。
+次に, Ubuntu, CentOS それぞれが __標準で実行できるはずのパッケージ管理コマンド__ を実行してみます。
+
+```shell-session
+[root@fdda8cec6fe2 /]# dpkg -l
+bash: dpkg: command not found
+[root@fdda8cec6fe2 /]# apt-get
+bash: apt-get: command not found
+[root@fdda8cec6fe2 /]#
+
+[root@fdda8cec6fe2 /]# rpm -l
+[root@fdda8cec6fe2 /]# yum history
+Failed to set locale, defaulting to C.UTF-8
+ID     | Command line                                                                                                                                                    | Date and time    | Action(s)      | Altered
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[root@fdda8cec6fe2 /]#
+```
+
+コンテナ上では, Ubuntu なら通常は実行できるはずの `dpkg`, `apt-get` が実行できず, CentOS が通常実行できる `rpm`, `yum` が実行できました。
+
+ここでもう一度, 今度は `uname -a` でコンテナの OS の情報を見てみます。
+
+```shell-session
+[root@fdda8cec6fe2 /]# uname -a
+Linux fdda8cec6fe2 5.4.0-97-generic #110-Ubuntu SMP Thu Jan 13 18:28:08 UTC 2022 aarch64 aarch64 aarch64 GNU/Linux
+[root@fdda8cec6fe2 /]#
+```
+
+よく見ると, `/etc/os-release` には CentOS と書いてあったのに, `uname -a` の結果は Ubuntu になっており, ホスト OS 上で実行した結果とほぼ同じになっています。
+ただし, ホスト名のみコンテナ名になっており, コンテナ上で `hostname` を実行した結果と同じになっています。
+
+```shell-session
+[root@fdda8cec6fe2 /]# hostname
+fdda8cec6fe2
+[root@fdda8cec6fe2 /]#
+```
+
+## 結論
+
+上の実験から, 以下のことがわかりました。
+
+1. Ubuntu のホスト OS 上で, ディストリビューションの異なる CentOS のコンテナが動かせた
+2. CentOS コンテナ上では CentOS に含まれるコマンド群が実行でき, Ubuntu に含まれるコマンド群は実行できなかった[^6]
+3. `uname -a` の結果は, コンテナ上での実行でもホスト OS とほぼ同じ[^7]
+
+以上から, 結論ありきであれば, 「コンテナに OS はない」ということに納得できるのではないでしょうか。
+コンテナレジストリなどにあるディストリビューション別のコンテナは, 確かに固有の OS (カーネル) があるわけではなく, __ディストリビューションからカーネル部分を除いた, ファイルシステムやソフトウェア, コマンド群のパッケージ__ と言えそうです (カーネルがないので広義の OS ですらない)。
+
+少なくとも自分はこの辺りを確認できたので, 「コンテナに OS はない」の意味に納得できました。
+
+[^6]: コマンドや関連ファイルがあるかないかの違いなので, 厳密には Ubuntu などの Debian 系で `rpm` や `yum` を実行することもできるはず。逆も同様。デフォルトで入っていないというだけ
+[^7]: 本当は実装をちゃんと見ないとこれが証拠になるかは断言できないが
+
+## おまけ1: Docker Desktop の仕組み
+
+上で「Linux kernel 上でないと Docker をはじめとするコンテナは作れません」と書きましたが, では Linux カーネルではない Windows や Mac でなぜ Docker が使えるのでしょうか。
+
+Windows や Mac では, Dokcer 使用時には [Docker Desktop](https://www.docker.com/products/docker-desktop) を使えます[^8]。
+
+Docker Desktop がどのようにコンテナを Windows, Mac などの非 Linux カーネル上で実現しているかというと, 実は軽量の Linux VM を構築して, その上で Docker を動かしています。
+この仕組みは例えば, Docker 公式ブログの記事, [The Magic Behind the Scenes of Docker Desktop](https://www.docker.com/blog/the-magic-behind-the-scenes-of-docker-desktop/) で次のように説明されています。
+
+> At the heart of Docker Desktop we have a lightweight LinuxKit VM that Docker manages for you.
+
+[^8]: Docker Desktop を使わなくても, Windows でも例えば WSL (Windows Subsystem for Linux) などを使えば Docker を使える
+
+## おまけ2: コンテナ上で「OS」を停止しようとするとどうなるか
+
+本筋に関係ない実験1。
+
+少し怖いですが実験として, `shutdown` や `poweroff --halt` を実行して, コンテナの「OS の」電源を切れるか試してみます。
+
+```shell-session
+[root@fdda8cec6fe2 /]# poweroff
+System has not been booted with systemd as init system (PID 1). Can't operate.
+Failed to connect to bus: Host is down
+Failed to talk to init daemon.
+[root@fdda8cec6fe2 /]# shutdown --halt
+System has not been booted with systemd as init system (PID 1). Can't operate.
+Failed to connect to bus: Host is down
+[root@fdda8cec6fe2 /]#
+```
+
+エラーになりました。
+エラーメッセージに「`systemd` が init system (PID 1) として実行されていない」と出ているので, プロセスを確認します。
+
+```shell-session
+[root@fdda8cec6fe2 /]# ps auxf
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.0   3916  2908 pts/0    Ss   12:00   0:00 /bin/bash
+root          48  0.0  0.0   8604  3024 pts/0    R+   12:17   0:00 ps auxf
+[root@fdda8cec6fe2 /]#
+```
+
+`docker run` した時に指定した `/bin/bash` が PID 1 になっています。
+通常は init プロセスが存在して, それを頂点とするプロセスツリーができているはずなのですが, コンテナはこのようになります。
+ホスト OS の方では, 確かに `init` プロセス (`systemd`) が PID 1 になっていることを確認できます。
+
+```shell-session
+kangetsu@ubuntu20:~$ ps auxf
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+[...]
+root           1  0.0  0.1 101664 10416 ?        Ss   16:09   0:01 /sbin/init splash
+root         400  0.0  0.4  83780 38560 ?        S<s  16:09   0:00 /lib/systemd/systemd-journald
+root         429  0.0  0.0  18448  4704 ?        Ss   16:09   0:00 /lib/systemd/systemd-udevd
+root         530  0.0  0.2 279988 16352 ?        SLsl 16:09   0:09 /sbin/multipathd -d -s
+systemd+     584  0.0  0.0  90324  6284 ?        Ssl  16:09   0:00 /lib/systemd/systemd-timesyncd
+systemd+     628  0.0  0.0  26284  6824 ?        Ss   16:09   0:00 /lib/systemd/systemd-networkd
+systemd+     630  0.0  0.1  23892 10940 ?        Ss   16:09   0:00 /lib/systemd/systemd-resolved
+root         669  0.0  0.1 240816  8456 ?        Ssl  16:09   0:01 /usr/lib/accountsservice/accounts-daemon
+root         674  0.0  0.0   8336  2580 ?        Ss   16:09   0:00 /usr/sbin/cron -f
+message+     675  0.0  0.0   8268  4308 ?        Ss   16:09   0:00 /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+root         681  0.0  0.0  80908  2932 ?        Ssl  16:09   0:01 /usr/sbin/irqbalance --foreground
+root         684  0.0  0.2  35188 18652 ?        Ss   16:09   0:00 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+syslog       685  0.0  0.0 220936  4044 ?        Ssl  16:09   0:00 /usr/sbin/rsyslogd -n -iNONE
+root         687  0.0  0.4 1093412 36980 ?       Ssl  16:09   0:04 /usr/lib/snapd/snapd
+root         692  0.0  0.0  16448  6536 ?        Ss   16:09   0:00 /lib/systemd/systemd-logind
+root         693  0.0  0.0  15904  5788 ?        Ss   16:09   0:00 /lib/systemd/systemd-machined
+root         698  0.0  0.1 393692 12368 ?        Ssl  16:09   0:00 /usr/lib/udisks2/udisksd
+daemon       703  0.0  0.0   3592  1844 ?        Ss   16:09   0:00 /usr/sbin/atd -f
+root         704  0.6  0.4 1407488 38180 ?       Ssl  16:09   2:00 /usr/bin/containerd
+root         721  0.0  0.0   6836  1756 ?        Ss+  16:09   0:00 /sbin/agetty -o -p -- \u --keep-baud 115200,38400,9600 ttyAMA0 vt220
+root         725  0.0  0.0   5312  1484 tty1     Ss+  16:09   0:00 /sbin/agetty -o -p -- \u --noclear tty1 linux
+root         728  0.0  0.0  12212  6404 ?        Ss   16:09   0:00 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+root        1245  0.0  0.0  15336  7648 ?        Ss   16:09   0:00  \_ sshd: kangetsu [priv]
+kangetsu    1366  0.0  0.0  15352  4212 ?        S    16:09   0:01  |   \_ sshd: kangetsu@pts/0
+kangetsu    1367  0.0  0.0   9928  4880 pts/0    Ss   16:09   0:00  |       \_ -bash
+kangetsu   10428  0.1  0.5 1418496 45464 pts/0   Sl+  21:00   0:01  |           \_ docker run -it centos /bin/bash
+[...]
+kangetsu@ubuntu20:~$ pstree
+systemd─┬─accounts-daemon───2*[{accounts-daemon}]
+        ├─2*[agetty]
+        ├─atd
+        ├─containerd───9*[{containerd}]
+        ├─containerd-shim─┬─bash
+        │                 └─10*[{containerd-shim}]
+[...]
+kangetsu@ubuntu20:~$
+
+kangetsu@ubuntu20:~$ ls -la /sbin/init
+lrwxrwxrwx 1 root root 20 Jan 10 13:56 /sbin/init -> /lib/systemd/systemd
+kangetsu@ubuntu20:~$
+```
+
+## おまけ3: コンテナ上で保存した一時データの行方
+
+本筋に関係ない実験2。
+
+コンテナ上で保存したデータがホスト上のどこに保存されているのか見ます。
+
+まずコンテナ上で, 1GB のファイルを作成します。
+
+```shell-session
+[root@fdda8cec6fe2 /]# df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          39G   18G   21G  46% /
+[root@fdda8cec6fe2 /]# dd if=/dev/zero of=/data.dat bs=1G count=1
+1+0 records in
+1+0 records out
+1073741824 bytes (1.1 GB, 1.0 GiB) copied, 0.556696 s, 1.9 GB/s
+[root@fdda8cec6fe2 /]# df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          39G   19G   20G  49% /
+[root@fdda8cec6fe2 /]#
+```
+
+この時, 当然ホストにも 1GB のファイルが増えていることになります。
+このようにしてコンテナ上で作られたファイルがどこにあるかというと, `/var/lib/docker/overlay2/` 以下にありました (後述する `docker image inspect` であたりをつけた後, 愚直にファイル作成前後で `du` して探しました)。
+
+```shell-session
+kangetsu@ubuntu20:~$ sudo ls -l /var/lib/docker/overlay2/337886ef932e709fecd0e4b11e0977bbf5da390c022be2deebd1dc8f7042e1d4/diff
+total 1048592
+-rw-r--r-- 1 root root 1073741824 Feb 11 22:26 data.dat
+drwxrwxrwt 2 root root       4096 Feb 11 21:08 tmp
+drwxr-xr-x 5 root root       4096 Sep 15 23:25 var
+kangetsu@ubuntu20:~$
+```
+
+このようなコンテナ上に作成されたファイルは, コンテナを停止しても消えませんが,
+
+```shell-session
+kangetsu@ubuntu20:~$ docker container start fdda8cec6fe2
+fdda8cec6fe2
+kangetsu@ubuntu20:~$ docker exec -it fdda8cec6fe2 /bin/bash
+[root@fdda8cec6fe2 /]# ls /data.dat
+/data.dat
+[root@fdda8cec6fe2 /]#
+```
+
+```shell-session
+kangetsu@ubuntu20:~$ sudo ls -l /var/lib/docker/overlay2/337886ef932e709fecd0e4b11e0977bbf5da390c022be2deebd1dc8f7042e1d4/diff/data.dat
+-rw-r--r-- 1 root root 1073741824 Feb 11 22:41 /var/lib/docker/overlay2/337886ef932e709fecd0e4b11e0977bbf5da390c022be2deebd1dc8f7042e1d4/diff/data.dat
+kangetsu@ubuntu20:~$
+```
+
+コンテナのインスタンス削除時に一緒に消えます。
+
+```shell-session
+kangetsu@ubuntu20:~$ docker container rm fdda8cec6fe2
+fdda8cec6fe2
+kangetsu@ubuntu20:~$
+```
+
+```shell-session
+kangetsu@ubuntu20:~$ sudo ls -l /var/lib/docker/overlay2/337886ef932e709fecd0e4b11e0977bbf5da390c022be2deebd1dc8f7042e1d4/diff/data.dat
+ls: cannot access '/var/lib/docker/overlay2/337886ef932e709fecd0e4b11e0977bbf5da390c022be2deebd1dc8f7042e1d4/diff/data.dat': No such file or directory
+kangetsu@ubuntu20:~$ sudo ls -l /var/lib/docker/overlay2/337886ef932e709fecd0e4b11e0977bbf5da390c022be2deebd1dc8f7042e1d4/
+ls: cannot access '/var/lib/docker/overlay2/337886ef932e709fecd0e4b11e0977bbf5da390c022be2deebd1dc8f7042e1d4/': No such file or directory
+kangetsu@ubuntu20:~$
+```
+
+ちなみに `docker image inspect` に `.GraphDriver.Data` という key があり, value が `/var/lib/docker/overlay2` 以下のパスになっているのですが, 上で作った `data.dat` が保存されたのはそことは違うディレクトリでした。
+
+```shell-session
+kangetsu@ubuntu20:~$ docker image inspect centos | jq '.[].GraphDriver'
+{
+  "Data": {
+    "MergedDir": "/var/lib/docker/overlay2/4c506c18e194df7f7396d93a287027d81e0ceac12856df9b7e5c25175fd169f5/merged",
+    "UpperDir": "/var/lib/docker/overlay2/4c506c18e194df7f7396d93a287027d81e0ceac12856df9b7e5c25175fd169f5/diff",
+    "WorkDir": "/var/lib/docker/overlay2/4c506c18e194df7f7396d93a287027d81e0ceac12856df9b7e5c25175fd169f5/work"
+  },
+  "Name": "overlay2"
+}
+kangetsu@ubuntu20:~$
+```
+
+この辺りは理解できていないので, また後で調べてみようと思います。
