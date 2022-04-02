@@ -1,6 +1,5 @@
-import * as React from 'react';
+import React from 'react';
 import { StaticImage } from 'gatsby-plugin-image';
-
 import { sideSection, navList, navItem } from './SideSocialList.module.scss';
 
 const SideSocialList = () => {

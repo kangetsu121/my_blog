@@ -1,9 +1,7 @@
-import * as React from 'react';
-
+import React from 'react';
 import Header from './header/Header.jsx';
 import SideMenu from './sideMenu/SideMenu.jsx';
 import Footer from './footer/Footer.jsx';
-
 import { headerContainer, bodyContents } from './Layout.module.scss';
 
 const Layout = ({ children }) => {

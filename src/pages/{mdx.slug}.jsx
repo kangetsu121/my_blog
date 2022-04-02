@@ -1,12 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
-
 import Layout from '../components/Layout.jsx';
 import Seo from '../components/Seo.jsx';
 import Main from '../components/main/Main.jsx';
 import ArticleSummary from '../components/main/ArticleSummary.jsx';
-
 import { bodyContainer, articleContent } from '../styles/article.module.scss';
 
 const BlogPost = ({ data }) => {

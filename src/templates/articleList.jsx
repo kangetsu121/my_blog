@@ -1,12 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 import { graphql, Link } from 'gatsby';
-
 import Layout from '../components/Layout.jsx';
 import Seo from '../components/Seo.jsx';
 import Main from '../components/main/Main.jsx';
 import ArticleSummary from '../components/main/ArticleSummary.jsx';
 import Pagination from '../components/pagination/Pagination.jsx';
-
 import { readMore } from '../components/main/ArticleSummary.module.scss';
 
 const IndexPage = ({ pageContext, data }) => {

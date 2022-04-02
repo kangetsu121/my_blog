@@ -1,9 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 import { Link } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
-
 import Menu from './HeaderMenu.jsx';
-
 import { header, logo, linkText } from './Header.module.scss';
 
 const Header = () => {

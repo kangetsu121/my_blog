@@ -1,9 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 import { graphql, Link, useStaticQuery } from 'gatsby';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTags } from '@fortawesome/free-solid-svg-icons';
-
 import { tagWrapper, individualTag } from './Tags.module.scss';
 
 const Tags = () => {

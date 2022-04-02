@@ -1,14 +1,12 @@
-import * as React from 'react';
+import React from 'react';
 import { Link, graphql } from 'gatsby';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTag } from '@fortawesome/free-solid-svg-icons';
-
 import Layout from '../components/Layout.jsx';
 import Seo from '../components/Seo.jsx';
 import Main from '../components/main/Main.jsx';
 import ArticleSummary from '../components/main/ArticleSummary.jsx';
 import Pagination from '../components/pagination/Pagination.jsx';
-
 import { topHeader } from './TagPages.module.scss';
 import { readMore } from '../components/main/ArticleSummary.module.scss';
 

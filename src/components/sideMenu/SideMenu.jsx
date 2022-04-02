@@ -1,10 +1,8 @@
-import * as React from 'react';
-
+import React from 'react';
 import SideAboutBlog from './SideAboutBlog.jsx';
 import SideAuthorProfile from './SideAuthorProfile.jsx';
 import SideSocialList from './SideSocialList.jsx';
 import Tags from './Tags.jsx';
-
 import { sideMenu } from './SideMenu.module.scss';
 
 const SideMenu = () => {
