@@ -1,4 +1,3 @@
-import React from 'react';
 import { sideSection } from './SideAboutBlog.module.scss';
 
 const SideAboutBlog = () => {

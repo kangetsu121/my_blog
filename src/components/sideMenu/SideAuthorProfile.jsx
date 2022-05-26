@@ -1,4 +1,3 @@
-import React from 'react';
 import { sideSection } from './SideAuthorProfile.module.scss';
 
 const SideAuthorProfile = () => {

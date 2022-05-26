@@ -1,4 +1,3 @@
-import React from 'react';
 import SideAboutBlog from './SideAboutBlog.jsx';
 import SideAuthorProfile from './SideAuthorProfile.jsx';
 import SideSocialList from './SideSocialList.jsx';

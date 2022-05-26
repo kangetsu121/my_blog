@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'gatsby';
 import { footer, link, navList } from './Footer.module.scss';
 

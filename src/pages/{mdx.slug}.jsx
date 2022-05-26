@@ -1,4 +1,3 @@
-import React from 'react';
 import { graphql } from 'gatsby';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import Layout from '../components/Layout.jsx';
@@ -13,7 +12,10 @@ const BlogPost = ({ data }) => {
       <Seo
         title={data.mdx.frontmatter.title}
         description={data.mdx.excerpt}
-        image={data.mdx.frontmatter.thumbnail.childImageSharp.gatsbyImageData.images.fallback.src}
+        image={
+          data.mdx.frontmatter.thumbnail.childImageSharp.gatsbyImageData.images
+            .fallback.src
+        }
         article={true}
       />
       <Main>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { graphql, Link, useStaticQuery } from 'gatsby';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTags } from '@fortawesome/free-solid-svg-icons';
