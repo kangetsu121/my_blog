@@ -3,7 +3,7 @@ const path = require('path');
 exports.createPages = async ({ actions, graphql, reporter }) => {
   const { createPage } = actions;
 
-  const articleListTemplate = path.resolve('./src/templates/articleList.jsx');
+  const articleListTemplate = path.resolve('src/templates/articleList.jsx');
   const tagTemplate = path.resolve('src/templates/tagPages.jsx');
 
   const result = await graphql(`
@@ -27,7 +27,7 @@ exports.createPages = async ({ actions, graphql, reporter }) => {
 
   // handle errors
   if (result.errors) {
-    reporter.panicOnBuild(`Error while running GraphQL query.`);
+    reporter.panicOnBuild('Error while running GraphQL query.');
     return;
   }
 
