@@ -66,11 +66,11 @@ TypeScript であれば, `tsconfig.json` を編集すれば良いようです。
 検索していたら, まず次の issue にたどり着きました。  
 [React 17 new JSX Transform: ReferenceError: React is not defined #28657](https://github.com/gatsbyjs/gatsby/issues/28657)
 
-この Issue の末尾から, 根本的に解決された Issue も確認できました。
+この Issue の末尾から, 根本的に解決された Issue も確認できました。  
 [feat(gatsby): Add JSX Runtime options to gatsby-config.js #33050](https://github.com/gatsbyjs/gatsby/pull/33050)
 
 どうやら, Gatsby でもちゃんと新方式に対応しているようです。
-ちなみにリリースノートもちゃんとあり, Gatsby 4.1 から対応したようでした。
+ちなみにリリースノートもちゃんとあり, Gatsby 4.1 から対応したようでした。  
 [JSX Runtime Options in `gatsby-config.js`](https://www.gatsbyjs.com/docs/reference/release-notes/v4.1/#jsx-runtime-options-in-gatsby-configjs)
 
 これらの記述によれば, `gatsby-config.js` に以下のエントリを足してやれば良いようです。
