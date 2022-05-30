@@ -1,0 +1,44 @@
+---
+title: 'GitHub 上で markdown ファイルをそのまま表示する'
+posted_at: '2022-05-31'
+updated_at: '2022-05-31'
+tags: ['GitHub', 'Markdown']
+thumbnail: './view-plain-markdown-on-github/github-logo.png'
+thumbnail_alt: 'GitHub logo'
+---
+
+## GitHub でのレビューで Markdown ファイルでも行数指定したい: モチベーション
+
+短いので TL;DR なしで。
+
+GitHub で, markdown ファイルをレビューするときがあります。
+GitHub でのレビュー時, コードであればビューの左にある行数の部分をクリックすると、その行を指定した URL を取得できます。
+よくコードレビュー時に使う方が多いと思います。
+
+しかし, markdown のファイルは, **GitHub では通常 HTML に変換されて表示されるため, この行数指定ができません**。
+このため, これまで私は苦肉の策として blame 画面で行数をポイントしていましたが, 本来の趣旨とは異なるので少し気持ち悪さがありました。
+
+ところが, 先日他の方が GitHub 上で, blame を使わずに markdown ファイルの行数を指定した URL を取得できているのを発見しました。
+周知なのかもしれませんが, とても便利なので記録 & 共有します。
+
+## 方法
+
+**GitHub 上で markdown ファイルを表示し, URL 末尾に `?plain=1` をつける** です。
+
+例: <https://github.com/kangetsu121/my_blog/blob/e2ef0be04a90a7acc952e8da7331c97861d74a6f/README.md?plain=1#L1>
+
+なお, これは有名ですが, GitHub のリポジトリ上のファイルを開いている状態で `y` を押すと URL がパーマネントリンクになるので, これも組み合わせるのが便利です[^1]。  
+例えば `y` を押さない <https://github.com/kangetsu121/my_blog/blob/main/README.md?plain=1> だと, URL が `/main/` になっているので main リポジトリのそのファイルの内容が変わると URL が指し示す内容も変わるのですが, パーマネントリンクなら main が更新されてもその時の内容のままになります。
+
+## 公式ドキュメント
+
+GitHub 公式ドキュメントはこちらです。[Linking to Markdown](https://docs.github.com/en/github-ae@latest/get-started/writing-on-github/working-with-advanced-formatting/creating-a-permanent-link-to-a-code-snippet#linking-to-markdown)
+
+History を見ると, この機能のドキュメントは 2022 年 1 月 12 日に公開されたようです。  
+<https://github.com/github/docs/commits/main/content/get-started/writing-on-github/working-with-advanced-formatting/creating-a-permanent-link-to-a-code-snippet.md>
+
+だから知らなかったのか。機能追加が嬉しい。
+
+非常に便利なので積極的に使っていきたいですね。
+
+[^1]: [Getting permanent links to files](https://docs.github.com/en/github-ae@latest/repositories/working-with-files/using-files/getting-permanent-links-to-files)
