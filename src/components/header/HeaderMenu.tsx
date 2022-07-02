@@ -1,18 +1,17 @@
+import { FunctionComponent } from 'react';
 import { Link } from 'gatsby';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRss } from '@fortawesome/free-solid-svg-icons';
+import { FaRss } from 'react-icons/fa';
 import { headerMenu, navList, navItem, link } from './HeaderMenu.module.scss';
 
-const HeaderMenu = () => {
+const HeaderMenu: FunctionComponent = () => {
   return (
     <nav className={headerMenu}>
       <ul className={navList}>
         <li className={navItem}>
           <Link className={link} to="/rss.xml">
-            SUBSCRIBE <FontAwesomeIcon icon={faRss} />
+            SUBSCRIBE <FaRss />
           </Link>
         </li>
-        {/* <li className={navItem}>LANGUAGE</li> */}
       </ul>
     </nav>
   );

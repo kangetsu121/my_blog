@@ -1,6 +1,31 @@
-module.exports = {
+import type { GatsbyConfig } from 'gatsby';
+
+type Site = {
+  readonly siteMetadata: {
+    readonly title: string;
+    readonly description: string;
+    readonly siteUrl: string;
+    readonly site_url: string;
+  };
+};
+type AllMdx = {
+  readonly totalCount: number;
+  readonly nodes: ReadonlyArray<{
+    readonly excerpt: string;
+    readonly html: string;
+    readonly slug: string;
+    readonly frontmatter: {
+      readonly title: string;
+      readonly posted_at: string;
+    };
+  }>;
+};
+
+const config: GatsbyConfig = {
   jsxRuntime: 'automatic',
+  graphqlTypegen: true,
   siteMetadata: {
+    lang: 'ja',
     title: 'Kangetsu Blog',
     titleTemplate: '%s',
     description: '学習メモや読書記録など',
@@ -88,7 +113,7 @@ module.exports = {
       resolve: 'gatsby-plugin-feed',
       options: {
         query: `
-          {
+          query SiteData {
             site {
               siteMetadata {
                 title
@@ -101,7 +126,11 @@ module.exports = {
         `,
         feeds: [
           {
-            serialize: ({ query: { site, allMdx } }) => {
+            serialize: ({
+              query: { site, allMdx },
+            }: {
+              query: { site: Site; allMdx: AllMdx };
+            }) => {
               return allMdx.nodes.map((node) => {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
@@ -113,7 +142,7 @@ module.exports = {
               });
             },
             query: `
-              {
+              query AllMdxData {
                 allMdx(
                   sort: {
                     fields: [frontmatter___updated_at, frontmatter___posted_at]
@@ -140,3 +169,5 @@ module.exports = {
     },
   ],
 };
+
+export default config;

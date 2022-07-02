@@ -1,9 +1,10 @@
-import Header from './header/Header.jsx';
-import SideMenu from './sideMenu/SideMenu.jsx';
-import Footer from './footer/Footer.jsx';
+import { FunctionComponent } from 'react';
+import Header from './header/Header';
+import SideMenu from './sideMenu/SideMenu';
+import Footer from './footer/Footer';
 import { headerContainer, bodyContents } from './Layout.module.scss';
 
-const Layout = ({ children }) => {
+const Layout: FunctionComponent = ({ children }) => {
   return (
     <>
       <div className={headerContainer}>

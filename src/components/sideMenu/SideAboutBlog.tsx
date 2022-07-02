@@ -1,6 +1,7 @@
+import { FunctionComponent } from 'react';
 import { sideSection } from './SideAboutBlog.module.scss';
 
-const SideAboutBlog = () => {
+const SideAboutBlog: FunctionComponent = () => {
   return (
     <section className={sideSection}>
       <h2>About This Blog</h2>

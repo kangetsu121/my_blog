@@ -1,7 +1,8 @@
+import { FunctionComponent } from 'react';
 import { Link } from 'gatsby';
 import { footer, link, navList } from './Footer.module.scss';
 
-const Footer = () => {
+const Footer: FunctionComponent = () => {
   return (
     <footer className={footer}>
       <ul className={navList}>
