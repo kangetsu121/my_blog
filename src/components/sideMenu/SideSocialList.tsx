@@ -1,7 +1,8 @@
 import { StaticImage } from 'gatsby-plugin-image';
+import { FunctionComponent } from 'react';
 import { sideSection, navList, navItem } from './SideSocialList.module.scss';
 
-const SideSocialList = () => {
+const SideSocialList: FunctionComponent = () => {
   return (
     <section className={sideSection}>
       <h2>Links</h2>

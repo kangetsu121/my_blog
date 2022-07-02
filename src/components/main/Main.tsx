@@ -1,6 +1,7 @@
+import { FunctionComponent } from 'react';
 import { mainArticles } from './Main.module.scss';
 
-const Main = ({ children }) => {
+const Main: FunctionComponent = ({ children }) => {
   return <main className={mainArticles}>{children}</main>;
 };
 

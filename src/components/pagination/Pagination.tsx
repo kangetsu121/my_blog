@@ -1,17 +1,20 @@
+import { FunctionComponent } from 'react';
 import { Link } from 'gatsby';
 import { navList, navItem, activeItem } from './Pagination.module.scss';
 
-const Pagination = ({ totalCount, limit }) => {
+type Props = {
+  totalCount: number;
+  limit: number;
+};
+
+const Pagination: FunctionComponent<Props> = ({ totalCount, limit }) => {
   const postsPerPage = limit;
   const pathname = typeof window !== 'undefined' ? location.pathname : '/';
-  const currentPageNum = pathname.match(/\d.?$/)?.input.match(/\d.?$/) ?? '/';
+  const currentPageNum = pathname.match(/\d+$/)?.[0] ?? '/';
   const pathPattern =
-    pathname === '/' ? '/article' : pathname.replace(/\/\d.?$/, '');
-  const range = (start, end) => {
-    return [...Array(end - start + 1)].map((_, i) => {
-      return start + i;
-    });
-  };
+    pathname === '/' ? '/article' : pathname.replace(/\/\d+$/, '');
+  const range = (start: number, end: number): number[] =>
+    Array.from({ length: end - start + 1 }, (_, index) => start + index);
 
   return (
     <ul className={navList}>

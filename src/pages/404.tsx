@@ -1,3 +1,4 @@
+import { FunctionComponent } from 'react';
 import { Link } from 'gatsby';
 
 // styles
@@ -24,7 +25,7 @@ const codeStyles = {
 };
 
 // markup
-const NotFoundPage = () => {
+const NotFoundPage: FunctionComponent = () => {
   return (
     <main style={pageStyles}>
       <title>Not found</title>

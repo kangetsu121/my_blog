@@ -1,13 +1,13 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBookReader } from '@fortawesome/free-solid-svg-icons';
+import { FunctionComponent } from 'react';
+import { FaBookReader } from 'react-icons/fa';
 import { wrapper, heading, text } from './Note.module.scss';
 
-const Note = ({ children }) => {
+const Note: FunctionComponent = ({ children }) => {
   return (
     <div className={wrapper}>
       <p className={heading}>
         <b>
-          <FontAwesomeIcon icon={faBookReader} /> Note
+          <FaBookReader /> Note
         </b>
       </p>
       <p className={text}>{children}</p>
