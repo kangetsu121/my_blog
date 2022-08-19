@@ -1,0 +1,113 @@
+---
+title: 'jsx ファイルを tsx ファイルに一括置換する'
+posted_at: '2022-08-19'
+updated_at: '2022-08-19'
+tags: ['Shell Script', 'TypeScript']
+thumbnail: '../../../src/images/logo.png'
+thumbnail_alt: 'Kangetsu Blog logo'
+---
+
+## TypeScript 移行するときに既存の JSX ファイルを一括置換したかった
+
+このブログは Gatsby.js で書いているのですが, JavaScript から TypeScript に移行しました。
+このときに, `.jsx` から `.tsx` にファイルの拡張子を置換したのですが, 一つ一つやっているととても大変なのでワンライナーでやりました。
+
+そのメモです。
+
+## コマンド
+
+以下のコマンドで実行しました。
+なお, もし実行する際は __必ず `echo` などで期待結果になるか確かめてから実行してください。当ブログでは実行の結果に責任を持ちません__。
+
+```shell
+# カレントディレクトリ以下の jsx ファイルを tsx ファイルに置換する
+
+# echo による確認を必ず先にする
+find ./ -name *.jsx | while read f; do echo $f ${f%.*}.tsx; done
+# mv で実際に置換する
+find ./ -name *.jsx | while read f; do mv $f ${f%.*}.tsx; done
+```
+
+### コマンドの解説
+
+分解して順に解説します。
+
+#### 1. `find ./ -name *.jsx`
+
+- 実行内容: カレントディレクトリ以下の `.jsx` ファイルのパスを全て取得
+- 実行例:
+
+    ```shell-session
+    kangetsu@ubuntu20:~/work/my_blog$ find ./ -name *.jsx
+    ./src/components/footer/Footer.jsx
+    ./src/components/util/Note.jsx
+    ./src/components/pagination/Pagination.jsx
+    ./src/components/header/HeaderMenu.jsx
+    ./src/components/header/Header.jsx
+    ./src/components/sideMenu/SideMenu.jsx
+    ./src/components/sideMenu/Tags.jsx
+    ./src/components/sideMenu/SideSocialList.jsx
+    ./src/components/sideMenu/SideAuthorProfile.jsx
+    ./src/components/sideMenu/SideAboutBlog.jsx
+    ./src/components/Layout.jsx
+    ./src/components/main/Main.jsx
+    ./src/components/main/ArticleSummary.jsx
+    ./src/components/Seo.jsx
+    ./src/templates/tagPages.jsx
+    ./src/templates/articleList.jsx
+    ./src/pages/{mdx.slug}.jsx
+    ./src/pages/404.jsx
+    kangetsu@ubuntu20:~/work/my_blog$
+    ```
+
+- `./`: カレントディレクトリを指す
+- `-name`: `-name` の後で指定したパターンにマッチするファイルを検索する
+
+詳細は `find` コマンドの `man` を見てください。
+単純に名前パターンで `jsx` ファイルのパスを取得しているだけ。
+
+#### 2. `| while read f; do mv $f ${f%.*}.tsx; done`
+
+- 実行内容: `1. find ./ -name *.jsx` で得られた結果 (カレントディレクトリ以下の全ての `.jsx` ファイルのパス) を `|` で標準入力として渡して, `while` ループで回して一つずつ `mv` コマンドで `.tsx` にリネーム
+- __`mv` ではなく `echo` の__ 実行例:
+
+    ```shell-session
+    kangetsu@ubuntu20:~/work/my_blog$ find ./ -name *.jsx | while read f; do echo $f ${f%.*}.tsx; done
+    ./src/components/footer/Footer.jsx ./src/components/footer/Footer.tsx
+    ./src/components/util/Note.jsx ./src/components/util/Note.tsx
+    ./src/components/pagination/Pagination.jsx ./src/components/pagination/Pagination.tsx
+    ./src/components/header/HeaderMenu.jsx ./src/components/header/HeaderMenu.tsx
+    ./src/components/header/Header.jsx ./src/components/header/Header.tsx
+    ./src/components/sideMenu/SideMenu.jsx ./src/components/sideMenu/SideMenu.tsx
+    ./src/components/sideMenu/Tags.jsx ./src/components/sideMenu/Tags.tsx
+    ./src/components/sideMenu/SideSocialList.jsx ./src/components/sideMenu/SideSocialList.tsx
+    ./src/components/sideMenu/SideAuthorProfile.jsx ./src/components/sideMenu/SideAuthorProfile.tsx
+    ./src/components/sideMenu/SideAboutBlog.jsx ./src/components/sideMenu/SideAboutBlog.tsx
+    ./src/components/Layout.jsx ./src/components/Layout.tsx
+    ./src/components/main/Main.jsx ./src/components/main/Main.tsx
+    ./src/components/main/ArticleSummary.jsx ./src/components/main/ArticleSummary.tsx
+    ./src/components/Seo.jsx ./src/components/Seo.tsx
+    ./src/templates/tagPages.jsx ./src/templates/tagPages.tsx
+    ./src/templates/articleList.jsx ./src/templates/articleList.tsx
+    ./src/pages/{mdx.slug}.jsx ./src/pages/{mdx.slug}.tsx
+    ./src/pages/404.jsx ./src/pages/404.tsx
+    kangetsu@ubuntu20:~/work/my_blog$
+    ```
+
+- `while read f`: 標準入力を一行ずつ読み込む。`f` は仮引数みたいなもの (変数名)
+- `${f%.*}.tsx`: ↑で指定した変数名 `f` を参照して, `$f`の拡張子を `.tsx` に置換
+  - `${f%.*}`: シェルの変数参照で, `${f}` の内容のうち `%` の後で指定した部分の後方最短一致で除去する。つまり `./src/pages/404.jsx` だと `.*` に後方最短一致する部分を除去するので, `.jsx` がマッチして除去され `./src/pages/404` となる (`${f%.*}.tsx` としているので除去された結果の `./src/pages/404` に `.tsx` がつき, `./src/pages/404.tsx` になる)。以下の bash の man 参照 (dash も同様):
+
+    ```man
+    [...]
+        ${parameter%word}
+        ${parameter%%word}
+                Remove matching suffix pattern.  The word is expanded to produce a pattern just as in pathname expansion, and matched against the expanded value of parameter using the rules described under Pat‐
+                tern Matching below.  If the pattern matches a trailing portion of the expanded value of parameter, then the result of the expansion is the expanded value of parameter with the shortest matching
+                pattern (the ``%'' case) or the longest matching pattern (the ``%%'' case) deleted.  If parameter is @ or *, the pattern removal operation is applied to each positional parameter  in  turn,  and
+                the  expansion  is the resultant list.  If parameter is an array variable subscripted with @ or *, the pattern removal operation is applied to each member of the array in turn, and the expansion
+                is the resultant list.
+    [...]
+    ```
+
+もっと良い方法があるのかもしれないけど, とりあえずわたしはこれでやりたいことは実現できました。
