@@ -1,0 +1,63 @@
+---
+title: '作成済みの multipass インスタンスのリソースを後から変更する'
+posted_at: '2022-08-29'
+updated_at: '2022-08-29'
+tags: ['multipass']
+thumbnail: './modify-multipass-instance-afterwards/canonical_aubergine_hex.png'
+thumbnail_alt: 'Canonical logo'
+---
+
+## multipass の disk を後から変更したかった
+
+今使っているマシンが M1 Mac で, 開発には [multipass](https://multipass.run/) の Ubuntu を使っています。
+開発中にインスタンスがディスクフルになってしまい, 事後的にディスクサイズを更新したのでその方法をメモします。
+
+日本語であまり記事がなかったのと, これから困る人も出そうだから書き残しておきます。
+なお, ディスクだけでなく CPU やメモリなどの他のリソースも更新可能とのことです。
+
+## 方法: `multipass set local.<instance-name>.(cpus|disk|memory)`
+
+[公式ドキュメント](<https://multipass.run/docs/modify-an-instance#heading--set-the-cpu-ram-or-disk-of-an-instance>) にあります。
+multipass バージョン 1.1.0 から利用可能で, 2022/8/29 現在プレビュー機能です。
+
+ドキュメントの通り, インスタンスを停止後, 以下のコマンドを実行すれば良いです:
+
+```sh
+multipass set local.<instance-name>.(cpus|disk|memory)
+```
+
+例えば, 私の場合ディスクを 40GB から 60GB にしたかったので, インスタンスの停止後に以下のコマンドを実行しました (`ubuntu20` は私のインスタンス名)。
+
+```sh
+multipass set local.Ubuntu20.disk=60GB
+```
+
+ヘルプを見るともっとわかりやすいかもしれません。
+`<key>` が `local.Ubuntu20.disk` で, `value` が `60GB` ですね。
+
+```shell-session
+$ multipass set -h
+Usage: multipass set [options] <key>[=<value>]
+Set, to the given value, the configuration setting corresponding to the given key.
+
+Some common settings keys are:
+  - client.gui.autostart
+  - local.driver
+  - local.privileged-mounts
+
+Use `multipass get --keys` to obtain the full list of available settings at any given time.
+
+Options:
+  -h, --help     Displays help on commandline options
+  -v, --verbose  Increase logging verbosity. Repeat the 'v' in the short option
+                 for more detail. Maximum verbosity is obtained with 4 (or more)
+                 v's, i.e. -vvvv.
+
+Arguments:
+  keyval         A key, or a key-value pair. The key specifies a path to the
+                 setting to configure. The value is its intended value. If only
+                 the key is given, the value will be prompted for.
+```
+
+コマンドが成功したらインスタンスを起動すれば終わりです。
+簡単にできてありがたい限り。
